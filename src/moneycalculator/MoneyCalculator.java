@@ -28,17 +28,17 @@ public class MoneyCalculator {
     }
 
     private void input() {
-        System.out.println("Introduzca una cantidad de dólares");
+        System.out.println("Introduce una cantidad de dólares: ");
         Scanner scanner = new Scanner(System.in);
-        amount = Double.parseDouble(scanner.next());
+        amount = scanner.nextDouble();
     }
 
     private void process() throws IOException {
-        exchangeRate = getExchangeRate("USD", "EUR");
+        exchangeRate = getExchangeRate("USD","EUR");
     }
 
     private void output() {
-        System.out.println(amount + " USD equivale a " + amount * exchangeRate + " EUR");
+        System.out.println(amount + " $ = " + amount * exchangeRate + " €");
     }
     
     /*private static double getExchangeRate(String from, String to) throws IOException{
@@ -73,4 +73,5 @@ public class MoneyCalculator {
             return Double.parseDouble(line1);
         }
     }
+
 }
