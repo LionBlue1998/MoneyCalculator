@@ -1,5 +1,6 @@
 package moneycalculator;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -12,20 +13,26 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 public class MoneyCalculator {
-
-    public static void main(String[] args) throws Exception {
-        MoneyCalculator moneyCalculator = new MoneyCalculator();
-        moneyCalculator.execute();
+    
+    public static void main(String[] args) throws IOException {
+        MoneyCalculator moneycalculator = new MoneyCalculator();
+        moneycalculator.execute();
     }
     
-    private double amount;
-    private double exchangeRate;
-    String currency;
-
+    double amount;
+    double exchangerate;
+    String currencyFrom;
+    String currencyTo;
+    
+    
     private void execute() throws IOException {
-        input();
-        process();
-        output();
+        try{
+            input();
+            process();
+            output();
+        }catch(IOException e){
+            System.out.println("No se encuentra su divisa. ERROR: " + e);
+        }
     }
 
     private void input() {
@@ -33,50 +40,49 @@ public class MoneyCalculator {
         Scanner scanner = new Scanner(System.in);
         amount = scanner.nextDouble();
         
-        System.out.println("Introduce una divisa: ");
-        currency = scanner.next();
+        System.out.println("Introduce una divisa inicial: ");
+        currencyFrom = scanner.next();
+        
+        System.out.println("Introduce una divisa final: ");
+        currencyTo = scanner.next();
     }
 
     private void process() throws IOException {
-        exchangeRate = getExchangeRate(currency,"EUR");
+        exchangerate = getExchangeRate(currencyFrom,currencyTo);
     }
 
     private void output() {
-        System.out.println(amount + " " + currency + " = " +
-                amount*exchangeRate + " euros");
+        if (exchangerate == -1){
+            System.out.println("Divisa no encontrada.");
+        }else{
+            System.out.println(amount + " " + currencyFrom + " = " +
+                    amount*exchangerate + " " + currencyTo);
+        }
     }
     
-    /*private static double getExchangeRate(String from, String to) throws IOException{
+    private static double getExchangeRate(String from, String to) throws IOException{
         URL url = new URL("https://api.exchangeratesapi.io/latest?base=" + from);
         URLConnection connection = url.openConnection();
-        try{
-            BufferedReader reader = 
-                new BufferedReader (new InputStreamReader(connection.getInputStream()));
+        try (BufferedReader reader = 
+                new BufferedReader (new InputStreamReader(connection.getInputStream()))){
             String line = reader.readLine();
             JsonParser parser = new JsonParser();
             JsonObject gsonObj = parser.parse(line).getAsJsonObject();
-            //String linel = line.substring(line.indexOf(to)+12,line.indexOf("}"));
-            JsonPrimitive moneyPrimitive = gsonObj.getAsJsonPrimitive(to);
-            double money = moneyPrimitive.getAsDouble();
-            return money;
-        }catch(IOException exception){
-            System.out.println("IOException encontrada: " + exception);
-            return -1;
-        }
-    }*/
-    
-    private static double getExchangeRate(String from, String to) throws IOException {
-        URL url = 
-            new URL("http://free.currencyconverterapi.com/api/v5/convert?q=" +
-                    from + "_" + to + "&compact=y");
-        URLConnection connection = url.openConnection();
-        try (BufferedReader reader = 
-                new BufferedReader(
-                        new InputStreamReader(connection.getInputStream()))) {
-            String line = reader.readLine();
-            String line1 = line.substring(line.indexOf(to)+12, line.indexOf("}"));
-            return Double.parseDouble(line1);
+            
+            JsonPrimitive datePrimitive = gsonObj.getAsJsonPrimitive("date");
+            String date = datePrimitive.getAsString();
+            
+            double result = -1;
+            JsonObject x = gsonObj.getAsJsonObject("rates");
+            for (Object key : x.keySet()) {
+                String rate = (String) key;
+                if (rate.equals(to)) {
+                    result = x.getAsJsonPrimitive(rate).getAsDouble();
+                    System.out.println(date);
+                    break;
+                }
+            }
+            return result;
         }
     }
-
 }
