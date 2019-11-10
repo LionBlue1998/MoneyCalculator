@@ -10,20 +10,29 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class MoneyCalculator {
+    
+    private Money money;
+    private double exchangerate;
+    private Currency currencyTo;
+    private Map<String,Currency> currencies = new HashMap<>();
     
     public static void main(String[] args) throws IOException {
         MoneyCalculator moneycalculator = new MoneyCalculator();
         moneycalculator.execute();
     }
     
-    double amount;
-    double exchangerate;
-    String currencyFrom;
-    String currencyTo;
-    
+    public MoneyCalculator(){
+        currencies.put("USD", new Currency("USD", "Dólar Americano", "$"));
+        currencies.put("EUR", new Currency("EUR", "Euros", "€"));
+        currencies.put("GBP", new Currency("GBP", "Libras Esterlinas", "£"));
+        currencies.put("CAD", new Currency("CAD","Dólar Canandiense","C$"));
+        currencies.put("MXN", new Currency("MXN","Peso Mexicano","$"));
+    }
     
     private void execute() throws IOException {
         try{
@@ -38,25 +47,26 @@ public class MoneyCalculator {
     private void input() {
         System.out.println("Introduce una cantidad: ");
         Scanner scanner = new Scanner(System.in);
-        amount = scanner.nextDouble();
+        double amount = Double.parseDouble(scanner.next());
         
         System.out.println("Introduce una divisa inicial: ");
-        currencyFrom = scanner.next();
+        Currency currency = currencies.get(scanner.next());
+        money = new Money(amount,currency);
         
         System.out.println("Introduce una divisa final: ");
-        currencyTo = scanner.next();
+        currencyTo = currencies.get(scanner.next());
     }
 
     private void process() throws IOException {
-        exchangerate = getExchangeRate(currencyFrom,currencyTo);
+        exchangerate = getExchangeRate(money.getCurrency().getIsoCode(),currencyTo.getIsoCode());
     }
 
     private void output() {
         if (exchangerate == -1){
             System.out.println("Divisa no encontrada.");
         }else{
-            System.out.println(amount + " " + currencyFrom + " = " +
-                    amount*exchangerate + " " + currencyTo);
+            System.out.println(money.getAmount() + money.getCurrency().getSymbol() + " = " 
+                    + money.getAmount() * exchangerate + currencyTo.getSymbol());
         }
     }
     
@@ -82,7 +92,7 @@ public class MoneyCalculator {
                     break;
                 }
             }
-            return result;
+            return result; 
         }
     }
 }
