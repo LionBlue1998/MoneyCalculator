@@ -21,7 +21,7 @@ public class MoneyCalculator {
     private Money money;
     private ExchangeRate exchangerate;
     private Currency currencyTo;
-    private final Map<String,Currency> currencies = new HashMap<>();
+    private final CurrencyList currencyList;
     
     public static void main(String[] args) throws IOException {
         MoneyCalculator moneycalculator = new MoneyCalculator();
@@ -29,11 +29,7 @@ public class MoneyCalculator {
     }
     
     public MoneyCalculator(){
-        currencies.put("USD", new Currency("USD", "Dólar Americano", "$"));
-        currencies.put("EUR", new Currency("EUR", "Euros", "€"));
-        currencies.put("GBP", new Currency("GBP", "Libras Esterlinas", "£"));
-        currencies.put("CAD", new Currency("CAD","Dólar Canandiense","C$"));
-        currencies.put("MXN", new Currency("MXN","Peso Mexicano","$"));
+        this.currencyList = new CurrencyList();
     }
     
     private void execute() throws IOException {
@@ -52,11 +48,19 @@ public class MoneyCalculator {
         double amount = Double.parseDouble(scanner.next());
         
         System.out.println("Introduce una divisa inicial: ");
-        Currency currency = currencies.get(scanner.next());
-        money = new Money(amount,currency);
+        while(true){
+            Currency currency = currencyList.get(scanner.next());
+            money = new Money(amount,currency);
+            if (currency != null) break;
+            System.out.println("Divisa no conocida");
+        }
         
+        while(true){
         System.out.println("Introduce una divisa final: ");
-        currencyTo = currencies.get(scanner.next());
+        currencyTo = currencyList.get(scanner.next());
+        if (currencyTo != null) break;
+        System.out.println("Divisa no conocida");
+        }
     }
 
     private void process() throws IOException {
