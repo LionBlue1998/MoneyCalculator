@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,9 +19,9 @@ import java.util.Scanner;
 public class MoneyCalculator {
     
     private Money money;
-    private double exchangerate;
+    private ExchangeRate exchangerate;
     private Currency currencyTo;
-    private Map<String,Currency> currencies = new HashMap<>();
+    private final Map<String,Currency> currencies = new HashMap<>();
     
     public static void main(String[] args) throws IOException {
         MoneyCalculator moneycalculator = new MoneyCalculator();
@@ -58,20 +60,20 @@ public class MoneyCalculator {
     }
 
     private void process() throws IOException {
-        exchangerate = getExchangeRate(money.getCurrency().getIsoCode(),currencyTo.getIsoCode());
+        exchangerate = getExchangeRate(money.getCurrency(),currencyTo);
     }
 
     private void output() {
-        if (exchangerate == -1){
+        if (exchangerate.getRate() == -1){
             System.out.println("Divisa no encontrada.");
         }else{
             System.out.println(money.getAmount() + money.getCurrency().getSymbol() + " = " 
-                    + money.getAmount() * exchangerate + currencyTo.getSymbol());
+                    + money.getAmount() * exchangerate.getRate() + currencyTo.getSymbol());
         }
     }
     
-    private static double getExchangeRate(String from, String to) throws IOException{
-        URL url = new URL("https://api.exchangeratesapi.io/latest?base=" + from);
+    private static ExchangeRate getExchangeRate(Currency from, Currency to) throws IOException{
+        URL url = new URL("https://api.exchangeratesapi.io/latest?base=" + from.getIsoCode());
         URLConnection connection = url.openConnection();
         try (BufferedReader reader = 
                 new BufferedReader (new InputStreamReader(connection.getInputStream()))){
@@ -86,13 +88,16 @@ public class MoneyCalculator {
             JsonObject x = gsonObj.getAsJsonObject("rates");
             for (Object key : x.keySet()) {
                 String rate = (String) key;
-                if (rate.equals(to)) {
+                if (rate.equals(to.getIsoCode())) {
                     result = x.getAsJsonPrimitive(rate).getAsDouble();
                     System.out.println(date);
                     break;
                 }
             }
-            return result; 
+            // fecha del PDF
+            return new ExchangeRate(from, to, 
+                    LocalDate.of(2018, Month.SEPTEMBER, 26), 
+                    result);
         }
     }
 }
