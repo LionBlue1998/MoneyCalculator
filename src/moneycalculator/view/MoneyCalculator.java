@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Scanner;
 import moneycalculator.model.Currency;
 import moneycalculator.model.CurrencyList;
 import moneycalculator.model.CurrencyLoader;
@@ -21,11 +20,12 @@ public class MoneyCalculator {
     private Money money;
     private ExchangeRate exchangerate;
     private Currency currencyTo, currencyFrom;
-    private CurrencyLoader currencyLoader;
+    private final CurrencyLoader currencyLoader;
     private final CurrencyList currencyList;
-    private String from, to, res;
+    private final String from, to;
+    private String res;
     private static String sdate;
-    private double amount;
+    private final double amount;
     
     public MoneyCalculator(CurrencyList currencyList, CurrencyLoader currencyLoader,double amount,String from,String to) throws IOException{
         this.currencyList = currencyList;
