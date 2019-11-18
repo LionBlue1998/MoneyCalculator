@@ -56,7 +56,6 @@ public class JFrameMain extends JFrame{
         currencies.add(to);
         // resultado
         JPanel jresult = new JPanel();
-        jresult.setLayout(new BoxLayout(jresult, BoxLayout.Y_AXIS));
         result = new JTextField(20);
         jresult.add(result);
         // colocar:
