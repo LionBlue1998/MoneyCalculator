@@ -12,7 +12,6 @@ import moneycalculator.view.MoneyDisplay;
 
 public class MainFrame extends JFrame{
     
-    private JTextField amount;
     private final Map<String,Command> commands = new HashMap<>();
     private final MoneyDisplay display;
     private final MoneyDialog dialog;
@@ -37,10 +36,6 @@ public class MainFrame extends JFrame{
     private JPanel toolBar(){
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        amount = new JTextField(20);
-        JPanel data = new JPanel();
-        data.setLayout(new FlowLayout());
-        data.add(amount);
         
         JPanel buttons = new JPanel();
         buttons.setLayout(new FlowLayout());
@@ -48,7 +43,6 @@ public class MainFrame extends JFrame{
         buttons.add(createButton("Calculate"));
         buttons.add(createButton("Cancel"));
         
-        panel.add(data);
         panel.add(dialog.getPanel());
         panel.add(display.getPanel());
         panel.add(buttons);
@@ -65,14 +59,6 @@ public class MainFrame extends JFrame{
             }
         });
         return button;
-    }
-    
-    public JTextField getAmount(){
-        return amount;
-    }
-    
-    public void setAmount(String s){
-        amount.setText(s);
     }
     
     public void addCommand(String id, Command command){
