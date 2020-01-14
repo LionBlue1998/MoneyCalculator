@@ -6,7 +6,7 @@ import javax.swing.JTextField;
 
 public class MoneyDisplay extends JPanel{
     
-    private static JTextField jText;
+    private final JTextField jText;
     
     public MoneyDisplay(){
        this.setLayout(new  FlowLayout());
