@@ -12,16 +12,16 @@ public class CalculateCommand implements Command{
     
     private final FileCurrencyLoader currencyLoader;
     private final CurrencyList currencyList;
-    private final MoneyDisplay display;
     private final MoneyDialogBox box;
+    private final MoneyDisplay display;
     private final MoneyDialogAmount amount;
 
     public CalculateCommand(FileCurrencyLoader currencyLoader, CurrencyList currencyList, MoneyDisplay display, MoneyDialogBox box, MoneyDialogAmount amount) {
         
         this.currencyLoader = currencyLoader;
         this.currencyList = currencyList;
-        this.display = display;
         this.box = box;
+        this.display = display;
         this.amount = amount;
     }
 
